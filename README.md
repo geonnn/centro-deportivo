@@ -4,148 +4,64 @@
 
 ---
 
-## ⚙️ Cómo ejecutar y probar el proyecto
+## 🧩 Novedad de esta versión
 
-A continuación se muestra un ejemplo de cómo probar las funcionalidades desarrolladas desde `Program.cs`.
+En esta versión, el sistema deja de operar exclusivamente por **consola** y se implementa una **interfaz gráfica de usuario (UI)** desarrollada en C#.  
+La nueva interfaz permite **una experiencia más intuitiva y visual**, manteniendo la misma lógica de negocio y arquitectura por capas que la versión anterior.
 
-###  Inicializaciones
-
-#### 🔹 Sistema de gestión de IDs y archivos
-
-```csharp
-IIdGetter idgetter = new IdGetter();
-IFileManager filemanager = new FileManager();
-```
-
-#### 🔹 Servicio de autorización
-
-```csharp
-// Servicio de autorizacion (provisorio)
-IServicioAutorizacion autorizador = new ServicioAutorizacion();
-int Admin = 1;
-int Usuario = 0;
-```
-
-#### 🔹 Repositorios
-
-```csharp
-IRepositorioPersona repoPersona = new RepositorioPersonaTXT(idgetter, filemanager);
-IRepositorioEventoDeportivo repoEventoDeportivo = new RepositorioEventoDeportivoTXT(idgetter, filemanager);
-IRepositorioReserva repoReserva = new RepositorioReservaTXT(idgetter, filemanager);
-```
-
-#### 🔹 Validadores
-
-```csharp
-PersonaValidador validadorPersona = new PersonaValidador(repoPersona, repoEventoDeportivo, repoReserva);
-EventoDeportivoValidador validadorEvento = new EventoDeportivoValidador(repoPersona, repoReserva);
-ReservaValidador validadorReserva = new ReservaValidador(repoPersona, repoEventoDeportivo, repoReserva);
-```
-
-#### 🔹 Casos de uso para entidad Persona
-
-```csharp
-var agregarPersona = new AgregarPersonaUseCase(repositorioPersona, servicioAutorizacion);
-var eliminarPersona = new EliminarPersonaUseCase(repoPersona, validadorPersona, servicioAutorizacion);
-var modificarPersona = new ModificarPersonaUseCase(repoPersona, validadorPersona, servicioAutorizacion);
-var listarPersonas = new ListarPersonaUseCase(repoPersona);
-```
-
-#### 🔹 Casos de uso para entidad EventoDeportivo
-
-```csharp
-var agregarEventoDeportivo = new AgregarEventoDeportivoUseCase(repositorioEventoDeportivo, servicioAutorizacion);
-var eliminarEventoDeportivo = new EliminarEventoDeportivoUseCase(repoEventoDeportivo, validadorEventoDeportivo, servicioAutorizacion);
-var modificarEventoDeportivo = new ModificarEventoDeportivoUseCase(repoEventoDeportivo, validadorEventoDeportivo, servicioAutorizacion);
-var listarEventosDeportivos = new ListarEventoDeportivoUseCase(repoEventoDeportivo);
-var listarEventosConCupoDisponible = new ListarEventosConCupoDisponibleUseCase(repositorioEventoDeportivo, repositorioReserva);
-var listarAsistenciaAEvento = new ListarAsistenciaAEventoUseCase(repoEventoDeportivo, repositorioReserva, repositorioPersona);
-```
-
-#### 🔹 Casos de uso para entidad Reserva
-
-```csharp
-var agregarReserva = new AgregarReservaUseCase(repositorioReserva, servicioAutorizacion);
-var eliminarReserva = new EliminarReservaUseCase(repoReserva, validadorReserva, servicioAutorizacion);
-var modificarReserva = new ModificarReservaUseCase(repoReserva, validadorReserva, servicioAutorizacion);
-var listarReservas = new ListarReservaUseCase(repoReserva);
-```
+Los casos de uso, repositorios y validaciones funcionan ahora detrás de la UI, que permite al usuario:
+- Gestionar personas, eventos y reservas de forma visual  
+- Navegar entre pantallas y formularios específicos  
+- Visualizar mensajes de error o éxito mediante ventanas modales  
+- Mantener la persistencia de datos en archivos de texto como en la versión original  
 
 ---
 
-### ▶️ Ejecución de los casos de uso
+## ⚙️ Cómo ejecutar el proyecto
 
-Para ejecutar los casos de uso estos deben estar dentro de un bloque **try**, seguido de un bloque **catch** para manejar las posibles excepciones:
-
-- `ValidacionException`
-- `EntidadNotFoundException`
-- `CupoExcedidoException`
-- `DuplicadoException`
-- `OperacionInvalidaException`
-- `FalloAutorizacionException`
+1. Abrir la solución en **Visual Studio 2022 o superior**
+2. Seleccionar el proyecto de interfaz gráfica como **Startup Project**
+3. Ejecutar el programa (`F5`) para iniciar la aplicación con la UI
 
 ---
 
-```csharp
-try
-{
-    // Ejecución de casos de uso
+## 🧠 Estructura general
 
-    // Persona
+El sistema mantiene una arquitectura modular basada en **capas y casos de uso**:
 
-    agregarPersona.Ejecutar(new Persona("DNI", "Nombre", "Apellido", "email@gmail.com", "teléfono"), Autorizacion);
-    // También se pueden crear personas sin teléfono:
-    agregarPersona.Ejecutar(new Persona("DNI", "Nombre", "Apellido", "email@gmail.com"), Autorizacion); 
+- **CentroEventos.Aplicacion.Entidades** → Clases de dominio (`Persona`, `EventoDeportivo`, `Reserva`, etc.)
+- **CentroEventos.Aplicacion.Validadores** → Validaciones de reglas de negocio
+- **CentroEventos.Aplicacion.UseCases** → Casos de uso que encapsulan la lógica de aplicación
+- **CentroEventos.Repositorios** → Manejo de archivos de texto e IDs autogenerados
+- **CentroEventos.UI** → Nueva capa de interfaz gráfica (formularios, controladores, vistas)
 
-    eliminarPersona.Ejecutar(int idPersona, Autorizacion);
-
-    modificarPersona.Ejecutar(new Persona(int idPersonaAModificar, "DNI", "Nombre", "Apellido", "email@gmail.com", "teléfono"), Autorizacion); // también se puede modificar sin teléfono.
-
-    listarPersona.Ejecutar(); // No requiere autorización.
-    // Fin Persona ------------------------------------------------
-
-    // Evento Deportivo
-
-    agregarEventoDeportivo.Ejecutar(new EventoDeportivo("Nombre", "Descripción", DateTime fechaInicio, double duracion, int cupoMáximo, int responsableId), Autorizacion);
-
-    eliminarEventoDeportivo.Ejecutar(idEventoDeportivo, Autorizacion);
-
-    modificarEventoDeportivo.Ejecutar(new EventoDeportivo(int idEventoAModificar, "Nombre", "Descripción", DateTime fechaInicio, double duracion, int cupoMáximo, int responsableId), Autorizacion); // también se puede modificar sin teléfono.
-
-    listarEventoDeportivo.Ejecutar(); // No requiere autorización.
-
-    listarEventosConCupoDisponible.Ejecutar();
-
-    listarAsistenciaAEvento.Ejecutar(int idEventoAConsultar);
-    // Fin Evento Deportivo ------------------------------------------------
-
-    // Reserva
-
-    agregarReserva.Ejecutar(new Reserva(int idPersona, int idEventoDeportivo, DateTime fechaAltaReserva, EstadoAsistencia estado), Autorizacion);
-
-    eliminarReserva.Ejecutar(int idReserva, Autorizacion);
-
-    modificarReserva.Ejecutar(new Reserva(int idReservaAModificar, int personaId, int eventoDeportivoId, DateTime fechaAltaReserva, EstadoAsistencia estado)); // también se puede modificar sin teléfono.
-
-    listarReserva.Ejecutar(); // No requiere autorización.
-    // Fin Reserva ------------------------------------------------
-
-}
-catch (Exception e)
-{
-    Console.WriteLine($"Excepción {e}:" + e.Message);
-}
-
-// Las excepciones también pueden manejarse individualmente con bloques catch específicos.
-```
 ---
 
 ## 💾 Repositorios
 
-Los datos se almacenan en archivos de texto plano. Cada entidad tiene su propio archivo para la permanencia de datos y gestión de IDs, que se autogeneran de manera incremental y no reutilizable.
+Los datos ahora se almacenan en una **base de datos SQLite**, lo que permite un manejo más robusto y eficiente de la persistencia.
+Cada entidad (Persona, EventoDeportivo, Reserva, etc.) tiene su propia tabla, y las relaciones se mantienen mediante claves foráneas e IDs autoincrementales.
 
-La ruta de los archivos se guarda en una variable de instancia en su respectivo repositorio.
-Los archivos de texto actualmente se almacenan en CentroEventos\CentroEventos.Repositorios\txt_files. Los mismos se generan automáticamente durante la ejecución del programa.
+La base de datos se crea automáticamente en tiempo de ejecución si no existe.
+Ruta por defecto del archivo de base de datos:
+CentroEventos.Repositorios/CentroEventos.sqlite
+
+Esta implementación mejora:
+
+- La **integridad de datos**
+
+- El **rendimiento en consultas**
+
+- Y la posibilidad de **ampliar** el sistema sin modificar el almacenamiento físico.
+
+---
+
+## 💡 Migración desde la versión de consola
+
+La nueva versión mantiene la compatibilidad con el modelo anterior:
+- Los **casos de uso** siguen disponibles y pueden ejecutarse sin la interfaz (por ejemplo, para testing o integración).  
+- Se eliminaron los ejemplos de ejecución directa desde `Program.cs`, ya que la inicialización y orquestación de las entidades ahora la realiza la UI.  
+- Se modularizó el acceso a cada entidad (Personas, Eventos, Reservas) mediante formularios dedicados.
 
 ---
 
