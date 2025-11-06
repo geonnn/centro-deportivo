@@ -21,9 +21,9 @@
     <input required id="email" type="email" @bind="email" />
 
     <label for="password">Contraseña:</label>
-    <input required id="password" type="password" @bind="password" />
+    <input required id="password" type="@passwd_text" @bind="password" />
 
-    <label for="showpass">Mostrar constraseña
+    <label for="showpass">Mostrar contraseña
         <input id="showpass" type="checkbox" @onclick="TogglePw" />
     </label>
 
@@ -39,7 +39,7 @@
     private string apellido = "";
     private string email = "";
     private string password = "";
-    private string mostrarPassword = "password";
+    private string passwd_text = "password";
 
 
     private Task OnSubmitRegister()
@@ -60,9 +60,9 @@
 
     private void TogglePw()
     {
-        if (mostrarPassword == "password")
-            mostrarPassword = "text";
+        if (passwd_text == "password")
+            passwd_text = "text";
         else
-            mostrarPassword = "password";
+            passwd_text = "password";
     }
 }

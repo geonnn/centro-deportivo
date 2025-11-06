@@ -15,15 +15,15 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 
-builder.Services.AddSingleton<Sesion>();
+builder.Services.AddScoped<Sesion>();
 
 builder.Services.AddSingleton<IServicioAutorizacion, ServicioAutorizacion>();
 builder.Services.AddSingleton<UiNotifier>();
 
-builder.Services.AddTransient<IRepositorioPersona, RepositorioPersona>();
-builder.Services.AddTransient<IRepositorioEventoDeportivo, RepositorioEventoDeportivo>();
-builder.Services.AddTransient<IRepositorioReserva, RepositorioReserva>();
-builder.Services.AddTransient<IRepositorioUsuario, RepositorioUsuario>();
+builder.Services.AddScoped<IRepositorioPersona, RepositorioPersona>();
+builder.Services.AddScoped<IRepositorioEventoDeportivo, RepositorioEventoDeportivo>();
+builder.Services.AddScoped<IRepositorioReserva, RepositorioReserva>();
+builder.Services.AddScoped<IRepositorioUsuario, RepositorioUsuario>();
 
 builder.Services.AddTransient<PersonaValidador>();
 builder.Services.AddTransient<EventoDeportivoValidador>();

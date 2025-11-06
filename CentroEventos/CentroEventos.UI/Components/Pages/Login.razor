@@ -20,9 +20,9 @@ else {
     <input required placeholder="Email" id="email" type="email" @bind="email" />
 
     <label for="password"></label>
-    <input required placeholder="Contraseña" id="password" type="@mostrarPassword" @bind="password"/>
+    <input required placeholder="Contraseña" id="password" type="@passwd_text" @bind="password"/>
 
-    <label for="showpass">Mostrar constraseña
+    <label for="showpass">Mostrar contraseña
         <input id="showpass" type="checkbox" @onclick="TogglePw" />
     </label>
 
@@ -36,14 +36,14 @@ else {
 @code {
     private string email = "";
     private string password = "";
-    private string mostrarPassword = "password";
+    private string passwd_text = "password";
 
     private void TogglePw()
     {
-        if (mostrarPassword == "password")
-            mostrarPassword = "text";
+        if (passwd_text == "password")
+            passwd_text = "text";
         else
-            mostrarPassword = "password";
+            passwd_text = "password";
     }
 
     private Task OnSubmitLogin()
